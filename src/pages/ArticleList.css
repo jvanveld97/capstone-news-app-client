@@ -1,0 +1,19 @@
+  /* ArticleList.css */
+
+.article-list-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Adjust as needed */
+}
+
+.article-card {
+    width: calc(33.33% - 20px); /* Adjust as needed */
+    /* Set the width of each card to occupy one-third of the container width with a gap between cards */
+    /* Subtract the gap width from the calculation to prevent overflow */
+}
+
+.article-card .MuiCardMedia-root {
+    height: 400px; /* Set a fixed height for the card image */
+    object-fit: cover; /* Ensure the image covers the entire container without distortion */
+    object-position: center center; /* Center the image within the container */
+}

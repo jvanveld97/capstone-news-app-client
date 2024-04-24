@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom"
 import { Authorized } from "./Authorized"
 import { Login } from "../pages/Login.jsx"
 import { Register } from '../pages/Register.jsx'
+import { ArticleList } from '../pages/ArticleList.jsx'
 
 
 
@@ -28,10 +29,7 @@ export const ApplicationViews = () => {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route element={<Authorized />}>
-                <Route path="/" element={<>Articles</>} />
-                {/* <Route path='/games' element={<GameList games={gamesState} fetchGames={fetchGamesFromAPI} />} />
-                <Route path='/games/:id' element={<GameDetails />} />
-                <Route path="/new_game" element={<GameForm fetchGames={fetchGamesFromAPI} />} /> */}
+                <Route path="/" element={<ArticleList />} />
             </Route>
         </Routes>
     </BrowserRouter>
