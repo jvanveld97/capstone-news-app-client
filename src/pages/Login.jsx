@@ -22,6 +22,7 @@ export const Login = () => {
             .then(authInfo => {
                 if (authInfo.token) {
                     localStorage.setItem("news_token", JSON.stringify(authInfo))
+                    localStorage.setItem("user_id", JSON.stringify)
                     navigate("/")
                 } else {
                     existDialog.current.showModal()

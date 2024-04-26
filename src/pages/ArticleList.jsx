@@ -11,7 +11,7 @@ import CommentsModal from "./CommentsModal";
 import './ArticleList.css';
 
 
-export const ArticleList = () => {
+export const ArticleList = ({currentUser}) => {
 
     const [articles, setArticles] = useState([])
     const [openModal, setOpenModal] = useState(false)
@@ -65,7 +65,7 @@ export const ArticleList = () => {
             ))}
             <CommentsModal
             open={openModal}
-            // handleOpen={handleModalOpen}
+            currentUser={currentUser}
             handleClose={handleModalClose}
             articleUrl={selectedArticleUrl}
             />
