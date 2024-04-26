@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+// eslint-disable-next-line no-unused-vars
 import * as React from 'react';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
@@ -6,12 +7,17 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
+import CommentsModal from "./CommentsModal";
 import './ArticleList.css';
 
 
 export const ArticleList = () => {
 
     const [articles, setArticles] = useState([])
+    const [openModal, setOpenModal] = useState(false)
+    const [selectedArticleUrl, setSelectedArticleUrl] = useState(null);
+
+
 
     const fetchArticlesFromApi = async () => {
         let url = `http://localhost:8000/articles`
@@ -27,6 +33,12 @@ export const ArticleList = () => {
     useEffect(() => {
         fetchArticlesFromApi()
     }, [])
+
+    const handleModalOpen = (articleUrl) => {
+        setSelectedArticleUrl(articleUrl)
+        setOpenModal(true)
+    } 
+    const handleModalClose = () => setOpenModal(false)
 
     return (
         <div className="article-list-container">
@@ -47,10 +59,17 @@ export const ArticleList = () => {
                         </Typography>
                     </CardContent>
                     <CardActions>
-                        <Button size="small" href={article.url} target="_blank" rel="noopener noreferrer">Comment</Button>
+                        <Button size="small" target="_blank" rel="noopener noreferrer" onClick={() => handleModalOpen(article.url)}  >Comment</Button>
                     </CardActions>
                 </Card>
             ))}
+            <CommentsModal
+            open={openModal}
+            // handleOpen={handleModalOpen}
+            handleClose={handleModalClose}
+            articleUrl={selectedArticleUrl}
+            />
         </div>
     )
 }
+// 
