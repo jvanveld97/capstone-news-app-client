@@ -10,19 +10,20 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton'
 import { styled } from '@mui/material/styles'
 import FavoriteIcon from '@mui/icons-material/Favorite'
+import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded'
 import { createSvgIcon } from '@mui/material/utils'
 import CommentsModal from "./CommentsModal";
 import './ArticleList.css';
-import { useFetchArticles } from "../components/services/articleFetcher";
+import { useFetchSavedArticles, useFetchArticles } from "../components/services/articleFetcher";
 
 
 // eslint-disable-next-line react/prop-types
-export const ArticleList = ({currentUser, category}) => {
+export const SavedArticleList = ({currentUser}) => {
 
     // const [articles, setArticles] = useState([])
     const [openModal, setOpenModal] = useState(false)
     const [selectedArticleUrl, setSelectedArticleUrl] = useState(null);
-    const articles = useFetchArticles(category)
+    const { articles, refetchSavedArticles } = useFetchSavedArticles()
 
 
     const PlusIcon = createSvgIcon(
@@ -87,18 +88,18 @@ export const ArticleList = ({currentUser, category}) => {
     } 
     const handleModalClose = () => setOpenModal(false)
 
-    // Function to handle saving an article
-    const handleSaveArticle = async (articleData) => {
-    
-        await fetch(`http://localhost:8000/saved_articles`, {
-          method: "POST",
-          headers: {
-            "Authorization": `Token ${JSON.parse(localStorage.getItem("news_token")).token}`,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ article: articleData })
-        })
-      }
+    // Function to handle removing an article
+    const handleDeleteArticle = async (articleId) => {
+
+        await fetch(`http://localhost:8000/saved_articles/${articleId}`, {
+            method: "DELETE",
+            headers: {
+                "Authorization": `Token ${JSON.parse(localStorage.getItem("news_token")).token}`,
+                "Content-Type": "application/json"
+            }
+            });
+            refetchSavedArticles(); // Call the refetch function after successful deletion
+        }
 
     return (
         <div className="article-list-container">
@@ -106,28 +107,28 @@ export const ArticleList = ({currentUser, category}) => {
                 <Card key={index} className="article-card">
                     <CardMedia
                         component="img"
-                        alt={article.title}
+                        alt={article.article.title}
                         height="140"
-                        image={article.url_to_image}
+                        image={article.article.url_to_image}
                     />
                     <CardContent>
                         <Typography gutterBottom variant="h5" component="div">
-                            {article.source_name}: <a href={article.url} target="_blank" rel="noopener noreferrer">{article.title}</a>
+                            {article.article.source_name}: <a href={article.article.url} target="_blank" rel="noopener noreferrer">{article.article.title}</a>
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                            {article.description}
+                            {article.article.description}
                         </Typography>
                     </CardContent>
                     <CardActions>
-                        <Button size="small" target="_blank" rel="noopener noreferrer" onClick={() => handleModalOpen(article.url)}  >Comment</Button>
+                        <Button size="small" target="_blank" rel="noopener noreferrer" onClick={() => handleModalOpen(article.article.url)}  >Comment</Button>
                         <StyledIconButton onClick={() => console.log('Thumbs up icon clicked')}>
                         <ThumbsUpIcon />
                         </StyledIconButton>
                         <StyledIconButton onClick={() => console.log('Thumbs down icon clicked')}>
                         <ThumbsDownIcon />
                         </StyledIconButton>
-                        <StyledIconButton onClick={() => handleSaveArticle(article)}>
-                        <PlusIcon />
+                        <StyledIconButton onClick={() => handleDeleteArticle(article.id)}>
+                        <DeleteForeverRoundedIcon />
                         </StyledIconButton>
                     </CardActions>
                 </Card>
@@ -140,6 +141,4 @@ export const ArticleList = ({currentUser, category}) => {
             />
         </div>
     )
-} 
-
-
+}
