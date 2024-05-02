@@ -17,6 +17,7 @@ export default function CommentsModal({open, articleUrl, handleClose, currentUse
 
 
   const initialNewCommentState = {
+    // eslint-disable-next-line react/prop-types
     user: currentUser.user_id,
     article_url: "",
     comment: "",
