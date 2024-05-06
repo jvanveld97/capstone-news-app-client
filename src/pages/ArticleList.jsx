@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 // eslint-disable-next-line no-unused-vars
 import * as React from 'react';
 import Card from '@mui/material/Card';
@@ -14,6 +14,8 @@ import { createSvgIcon } from '@mui/material/utils'
 import CommentsModal from "./CommentsModal";
 import './ArticleList.css';
 import { useFetchArticles } from "../components/services/articleFetcher";
+import { SearchQueryContext } from "./SearchQueryContext"; 
+import globeImage from '../assets/globe 2.png';
 
 
 // eslint-disable-next-line react/prop-types
@@ -21,8 +23,9 @@ export const ArticleList = ({currentUser, category}) => {
 
     // const [articles, setArticles] = useState([])
     const [openModal, setOpenModal] = useState(false)
-    const [selectedArticleUrl, setSelectedArticleUrl] = useState(null);
-    const articles = useFetchArticles(category)
+    const [selectedArticleUrl, setSelectedArticleUrl] = useState(null)
+    const { searchQuery } = useContext(SearchQueryContext)
+    const articles = useFetchArticles(category, searchQuery)
 
 
     const PlusIcon = createSvgIcon(
@@ -101,14 +104,14 @@ export const ArticleList = ({currentUser, category}) => {
       }
 
     return (
-        <div className="article-list-container">
+        <div style={{ padding: '23px' }} className="article-list-container">
             {articles && articles.map((article, index) => (
                 <Card key={index} className="article-card">
                     <CardMedia
                         component="img"
                         alt={article.title}
                         height="140"
-                        image={article.url_to_image}
+                        image={article.url_to_image || globeImage}
                     />
                     <CardContent>
                         <Typography gutterBottom variant="h5" component="div">

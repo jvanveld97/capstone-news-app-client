@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 
-export const useFetchArticles = (category) => {
+export const useFetchArticles = (category, searchQuery) => {
   const [articles, setArticles] = useState([]);
 
   useEffect(() => {
@@ -8,6 +8,9 @@ export const useFetchArticles = (category) => {
       let url = `http://localhost:8000/articles`;
       if (category && category !== 'general') {
         url += `?category=${category}`;
+      }
+      else if (searchQuery) {
+        url = `http://localhost:8000/articles/search?q=${searchQuery}`
       }
 
       const response = await fetch(url, {
@@ -20,7 +23,7 @@ export const useFetchArticles = (category) => {
     };
 
     fetchArticlesFromApi();
-  }, [category]);
+  }, [category, searchQuery]);
 
   return articles;
 }
