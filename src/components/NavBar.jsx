@@ -30,7 +30,7 @@
 //     )
 // }
 
-import React from 'react';
+import React, { useContext, useState } from 'react';
 import { NavLink, useNavigate } from "react-router-dom";
 import { styled, alpha } from '@mui/material/styles'
 import AppBar from '@mui/material/AppBar';
@@ -43,6 +43,8 @@ import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu'
 import SearchIcon from '@mui/icons-material/Search'
+import { SearchQueryContext } from '../pages/SearchQueryContext';
+import { Button } from '@mui/material' 
 
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
@@ -90,6 +92,23 @@ export const NavBar = () => {
     const navigate = useNavigate();
     const [anchorEl, setAnchorEl] = React.useState(null);
     const isMenuOpen = Boolean(anchorEl);
+    const { setSearchQuery } = useContext(SearchQueryContext)
+    const [currentQuery, setCurrentQuery] = useState('')
+
+    const handleSearchChange = (event) => {
+      setCurrentQuery(event.target.value)
+    }
+    const handleSearchSubmit = (query) => {
+        if (query !== '') {
+          setSearchQuery(query);
+        }
+      }
+    const handleKeyDown = (event) => {
+        if (event.key === 'Enter') {
+            handleSearchSubmit(event.target.value.trim());
+            event.target.value = ''; // Clear the input field after submitting
+          }
+        }
   
     const handleMenuOpen = (event) => {
       setAnchorEl(event.currentTarget);
@@ -163,14 +182,20 @@ export const NavBar = () => {
               <NavLink to="/saved_articles" style={{ color: 'inherit', textDecoration: "underline" , padding: "10px"}}>
               Saved
               </NavLink>
+              <NavLink to="/topics/articles" style={{ color: 'inherit', textDecoration: "underline" , padding: "10px"}}>
+              Following
+              </NavLink>
             </Typography>
             <Search>
                 <SearchIconWrapper>
-                <SearchIcon />
+                    <SearchIcon />
                 </SearchIconWrapper>
                 <StyledInputBase
-                placeholder="Search…"
-                inputProps={{ 'aria-label': 'search' }}
+                    placeholder="Search…"
+                    inputProps={{ 'aria-label': 'search' }}
+                    value={currentQuery}
+                    onChange={handleSearchChange}
+                    onKeyDown={handleKeyDown}
                 />
             </Search>
           </Toolbar>
