@@ -8,3 +8,22 @@
     flex-basis: 20%;
     list-style-type: none;
 }
+.navbar__links {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .navbar__left-links {
+    order: 1; /* Display these links first */
+  }
+  
+  .navbar__right-links {
+    order: 3; /* Display these links last */
+    margin-left: auto; /* Push these links to the right */
+  }
+  
+  .navbar__search {
+    order: 2; /* Display the search bar in the middle */
+    margin-left: auto; /* Push the search bar to the right */
+  }
