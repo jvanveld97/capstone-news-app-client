@@ -28,3 +28,26 @@
     margin-bottom: 10px;
     border-radius: 5px;
   }
+  .comment-form-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  
+  .comment-text-field {
+    width: 450px;
+  }
+  
+  .comment-text-field .MuiOutlinedInput-root {
+    font-size: 16px; /* Adjust the font size as needed */
+    padding: 12px; /* Adjust the padding as needed */
+  }
+  
+  .comment-text-field .MuiFormLabel-root {
+    color: #555; /* Adjust the label color as needed */
+  }
+  
+  .comment-button {
+    margin-top: 8px;
+  }

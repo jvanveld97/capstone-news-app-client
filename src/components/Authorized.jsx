@@ -2,17 +2,6 @@ import { Navigate, Outlet } from "react-router-dom"
 import { NavBar } from "./NavBar.jsx"
 import { SearchQueryProvider } from '../pages/SearchQueryContext'
 
-// export const Authorized = () => {
-//   if (localStorage.getItem("news_token")) {
-//     return <>
-//       <NavBar />
-//       <main className="p-4">
-//         <Outlet />
-//       </main>
-//     </>
-//   }
-//   return <Navigate to='/login' replace />
-// }
 
 export const Authorized = () => {
   if (localStorage.getItem("news_token")) {
@@ -25,5 +14,5 @@ export const Authorized = () => {
       </SearchQueryProvider>
     )
   }
-  return <Navigate to='/login' replace />
+  return <Navigate to="/login" replace />
 }

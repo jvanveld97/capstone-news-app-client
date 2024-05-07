@@ -1,35 +1,3 @@
-// import { NavLink, useNavigate } from "react-router-dom"
-// import "./NavBar.css"
-
-// export const NavBar = () => {
-//     const navigate = useNavigate()
-//     return (
-//         <ul className="navbar pb-10">
-//             <li className="navbar__item pl-10">
-//                 <NavLink className="text-left underline text-blue-600 hover:text-purple-700" to={"/"}>News</NavLink>
-//             </li>
-//             {
-//                 (localStorage.getItem("news_token") !== null) ?
-//                     <li className="navbar__item">
-//                         <button className="underline text-blue-600 hover:text-purple-700"
-//                             onClick={() => {
-//                                 localStorage.removeItem("news_token")
-//                                 navigate('/login')
-//                             }}
-//                         >Logout</button>
-//                     </li> :
-//                     <>
-//                         <li className="navbar__item">
-//                             <NavLink className="text-left underline text-blue-600 hover:text-purple-700" to={"/login"}>Login</NavLink>
-//                         </li>
-//                         <li className="navbar__item">
-//                             <NavLink className="text-left underline text-blue-600 hover:text-purple-700" to={"/register"}>Register</NavLink>
-//                         </li>
-//                     </>
-//             }        </ul>
-//     )
-// }
-
 import React, { useContext, useState } from 'react';
 import { NavLink, useNavigate } from "react-router-dom";
 import { styled, alpha } from '@mui/material/styles'
@@ -44,7 +12,6 @@ import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu'
 import SearchIcon from '@mui/icons-material/Search'
 import { SearchQueryContext } from '../pages/SearchQueryContext';
-import { Button } from '@mui/material' 
 
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
@@ -163,6 +130,7 @@ export const NavBar = () => {
               variant="h6"
               component="div"
               sx={{ flexGrow: 1 }}
+              className="navbar__links"
             >
               <NavLink to="/" style={{ color: 'inherit', textDecoration: 'none', padding: "10px" }}>
                 Top News
@@ -179,10 +147,10 @@ export const NavBar = () => {
               <NavLink to="/science" style={{ color: 'inherit', textDecoration: 'none' , padding: "10px"}}>
               Science
               </NavLink>
-              <NavLink to="/saved_articles" style={{ color: 'inherit', textDecoration: "underline" , padding: "10px"}}>
+              <NavLink to="/saved_articles" style={{ color: 'inherit', textDecoration: "underline" , padding: "10px"}} className="navbar__right-links">
               Saved
               </NavLink>
-              <NavLink to="/topics/articles" style={{ color: 'inherit', textDecoration: "underline" , padding: "10px"}}>
+              <NavLink to="/topics/articles" style={{ color: 'inherit', textDecoration: "underline" , padding: "10px"}} className="navbar__right-links">
               Following
               </NavLink>
             </Typography>
