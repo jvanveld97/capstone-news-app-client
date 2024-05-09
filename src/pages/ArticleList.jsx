@@ -15,7 +15,10 @@ import CommentsModal from "./CommentsModal";
 import './ArticleList.css';
 import { useFetchArticles } from "../components/services/articleFetcher";
 import { SearchQueryContext } from "./SearchQueryContext"; 
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
 import globeImage from '../assets/globe 2.png';
+import SummarizeIcon from '@mui/icons-material/Summarize'
 
 
 // eslint-disable-next-line react/prop-types
@@ -25,6 +28,8 @@ export const ArticleList = ({ currentUser, category }) => {
   const [selectedArticleUrl, setSelectedArticleUrl] = useState(null)
   const { searchQuery } = useContext(SearchQueryContext)
   const articles = useFetchArticles(category, searchQuery)
+  const [summarizedText, setSummarizedText] = useState('')
+  const [openSummaryPopup, setOpenSummaryPopup] = useState(false)
 
   const PlusIcon = createSvgIcon(
     // credit: plus icon from https://heroicons.com/
@@ -51,6 +56,7 @@ export const ArticleList = ({ currentUser, category }) => {
     },
   }))
 
+
   const handleModalOpen = (articleUrl) => {
     setSelectedArticleUrl(articleUrl)
     setOpenModal(true)
@@ -71,6 +77,27 @@ export const ArticleList = ({ currentUser, category }) => {
     })
   }
 
+  const handleSummarizeArticle = async (articleUrl) => {
+    try {
+      const response = await fetch(`http://localhost:8000/summarizer`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Token ${
+            JSON.parse(localStorage.getItem("news_token")).token
+          }`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ articleUrl }),
+      });
+  
+      const data = await response.json();
+      setSummarizedText(data.choices[0].message.content)
+      setOpenSummaryPopup(true);
+    } catch (error) {
+      console.error('Error summarizing article:', error);
+    }
+  }
+
   return (
     <div style={{ padding: "23px" }} className="article-list-container">
       {articles &&
@@ -85,12 +112,7 @@ export const ArticleList = ({ currentUser, category }) => {
             <div className="card-content">
               <div className="article-details" style={{ padding: "16px" }}>
                 <Typography gutterBottom variant="h5" component="div">
-                  {/* {article.source_name}:{' '} */}
-                  <a
-                    href={article.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
+                  <a href={article.url} target="_blank" rel="noopener noreferrer">
                     {article.title}
                   </a>
                 </Typography>
@@ -110,6 +132,9 @@ export const ArticleList = ({ currentUser, category }) => {
                 <StyledIconButton onClick={() => handleSaveArticle(article)}>
                   <PlusIcon />
                 </StyledIconButton>
+                <IconButton color="success" onClick={() => handleSummarizeArticle(article.url)}>
+                  <SummarizeIcon />
+                </IconButton>
               </CardActions>
             </div>
           </Card>
@@ -120,6 +145,16 @@ export const ArticleList = ({ currentUser, category }) => {
         handleClose={handleModalClose}
         articleUrl={selectedArticleUrl}
       />
+      <Dialog
+        open={openSummaryPopup}
+        onClose={() => setOpenSummaryPopup(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogContent>
+          <Typography variant="body1">{summarizedText}</Typography>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 } 

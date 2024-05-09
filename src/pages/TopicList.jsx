@@ -5,11 +5,16 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import { CardActionArea } from '@mui/material';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
 import Box from '@mui/material/Box'
 import { Button } from '@mui/material'
 import "./TopicList.css"
 import globeImage from '../assets/globe 2.png';
 import TextField from '@mui/material/TextField'
+import SummarizeIcon from '@mui/icons-material/Summarize'
+import IconButton from '@mui/material/IconButton'
+import { styled } from '@mui/material/styles'
 
 
 export const TopicList = () => {
@@ -17,6 +22,8 @@ export const TopicList = () => {
   const [newTopicName, setNewTopicName] = useState("")
   const [topics, setTopics] = useState([])
   const articlesContainerRefs = useRef([])
+  const [summarizedText, setSummarizedText] = useState('')
+  const [openSummaryPopup, setOpenSummaryPopup] = useState(false)
 
   const CACHE_KEY = "topicsAndArticles"
   const CACHE_EXPIRATION_TIME = 10800000 // 3 hours in milliseconds
@@ -102,63 +109,71 @@ export const TopicList = () => {
     }
   }, [])
 
-  useEffect(() => {
-    fetchTopicsAndArticles()
+useEffect(() => {
+  fetchTopicsAndArticles();
+}, [fetchTopicsAndArticles]);
 
-    const handleMouseMove = (e, index) => {
-      const articlesContainer = articlesContainerRefs.current[index]
-      if (articlesContainer && articlesContainer.contains(e.target)) {
-        articlesContainer.scrollLeft += e.deltaY
-        e.preventDefault() // Prevent vertical scrolling when over the articles container
-      }
+const handleMouseMove = useCallback(
+  (e, index) => {
+    const articlesContainer = articlesContainerRefs.current[index];
+    if (articlesContainer && articlesContainer.contains(e.target)) {
+      articlesContainer.scrollLeft += e.deltaY;
+      e.preventDefault(); // Prevent vertical scrolling when over the articles container
     }
+  },
+  [articlesContainerRefs]
+);
 
-    const handleMouseLeave = (index) => {
-      const articlesContainer = articlesContainerRefs.current[index]
-      if (articlesContainer) {
-        articlesContainer.removeEventListener("wheel", (e) =>
-          handleMouseMove(e, index)
-        )
-        articlesContainer.removeEventListener("mouseleave", () =>
-          handleMouseLeave(index)
-        )
-      }
+const handleMouseLeave = useCallback(
+  (index) => {
+    const articlesContainer = articlesContainerRefs.current[index];
+    if (articlesContainer) {
+      articlesContainer.removeEventListener("wheel", (e) =>
+        handleMouseMove(e, index)
+      );
+      articlesContainer.removeEventListener("mouseleave", () =>
+        handleMouseLeave(index)
+      );
     }
+  },
+  [handleMouseMove]
+);
 
-    const attachEventListeners = () => {
-      if (articlesContainerRefs.current) {
-        articlesContainerRefs.current.forEach((ref, index) => {
-          const articlesContainer = ref
-          if (articlesContainer) {
-            articlesContainer.addEventListener("wheel", (e) =>
-              handleMouseMove(e, index)
-            )
-            articlesContainer.addEventListener("mouseleave", () =>
-              handleMouseLeave(index)
-            )
-          }
-        })
-      }
+useEffect(() => {
+  const attachEventListeners = () => {
+    if (articlesContainerRefs.current) {
+      articlesContainerRefs.current.forEach((ref, index) => {
+        const articlesContainer = ref;
+        if (articlesContainer) {
+          articlesContainer.addEventListener("wheel", (e) =>
+            handleMouseMove(e, index)
+          );
+          articlesContainer.addEventListener("mouseleave", () =>
+            handleMouseLeave(index)
+          );
+        }
+      });
     }
+  };
 
-    attachEventListeners()
+  attachEventListeners();
 
-    return () => {
-      if (articlesContainerRefs.current) {
-        articlesContainerRefs.current.forEach((ref, index) => {
-          const articlesContainer = ref
-          if (articlesContainer) {
-            articlesContainer.removeEventListener("wheel", (e) =>
-              handleMouseMove(e, index)
-            )
-            articlesContainer.removeEventListener("mouseleave", () =>
-              handleMouseLeave(index)
-            )
-          }
-        })
-      }
+  return () => {
+    if (articlesContainerRefs.current) {
+      articlesContainerRefs.current.forEach((ref, index) => {
+        const articlesContainer = ref;
+        if (articlesContainer) {
+          articlesContainer.removeEventListener("wheel", (e) =>
+            handleMouseMove(e, index)
+          );
+          articlesContainer.removeEventListener("mouseleave", () =>
+            handleMouseLeave(index)
+          );
+        }
+      });
     }
-  }, [fetchTopicsAndArticles, articlesContainerRefs])
+  };
+}, [handleMouseMove, handleMouseLeave]);
 
   const handleCreateTopic = async (topicName) => {
     try {
@@ -227,6 +242,34 @@ export const TopicList = () => {
     }
   }
 
+  // Styled IconButton component
+  const StyledIconButton = styled(IconButton)(({ theme }) => ({
+    "&:hover": {
+      backgroundColor: theme.palette.action.hover,
+    },
+  }))
+
+  const handleSummarizeArticle = async (articleUrl) => {
+    try {
+      const response = await fetch(`http://localhost:8000/summarizer`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Token ${
+            JSON.parse(localStorage.getItem("news_token")).token
+          }`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ articleUrl }),
+      });
+  
+      const data = await response.json();
+      setSummarizedText(data.choices[0].message.content)
+      setOpenSummaryPopup(true);
+    } catch (error) {
+      console.error('Error summarizing article:', error);
+    }
+  }
+
   return (
     <div style={{ padding: "80px" }}>
       {topicsAndArticles.map((topicData, index) => (
@@ -245,7 +288,7 @@ export const TopicList = () => {
             sx={{
               overflowX: "auto",
               whiteSpace: "nowrap",
-              maxHeight: 325,
+              maxHeight: 385,
             }}
             ref={(el) => (articlesContainerRefs.current[index] = el)}
           >
@@ -255,8 +298,9 @@ export const TopicList = () => {
                 sx={{
                   display: "inline-block",
                   marginRight: 2,
-                  maxWidth: 400,
-                  height: 300,
+                  width: 400,
+                  height: 360,
+                  position: "relative"
                 }}
               >
                 <CardActionArea>
@@ -292,10 +336,23 @@ export const TopicList = () => {
                         whiteSpace: "normal",
                       }}
                     >
+                    <a href={article.url} target="_blank" rel="noopener noreferrer">
                       {`${article.source_name}: ${article.title}`}
+                    </a>
                     </Typography>
                   </CardContent>
                 </CardActionArea>
+                <IconButton
+                    sx={{
+                    position: "absolute",
+                    bottom: 10,
+                    right: 10,
+                    }}
+                    color="success"
+                    onClick={() => handleSummarizeArticle(article.url)}
+                >
+                    <SummarizeIcon />
+                </IconButton>
               </Card>
             ))}
           </Box>
@@ -326,6 +383,16 @@ export const TopicList = () => {
           Create Topic
         </Button>
       </Box>
+      <Dialog
+        open={openSummaryPopup}
+        onClose={() => setOpenSummaryPopup(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogContent>
+          <Typography variant="body1">{summarizedText}</Typography>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
