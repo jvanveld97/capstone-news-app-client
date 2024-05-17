@@ -141,7 +141,7 @@ export const ArticleList = ({ currentUser, category }) => {
         ))}
       <CommentsModal
         open={openModal}
-        currentUser={currentUser}
+        currentUser={currentUser ? currentUser : null}
         handleClose={handleModalClose}
         articleUrl={selectedArticleUrl}
       />

@@ -66,14 +66,22 @@ export const NavBar = () => {
       setCurrentQuery(event.target.value)
     }
     const handleSearchSubmit = (query) => {
-        if (query !== '') {
-          setSearchQuery(query);
-        }
+      if (query.trim() !== '') {
+        setSearchQuery(query.trim());
+        setCurrentQuery('');
       }
+    }
+
+    const handleCategoryClick = (category) => {
+      setSearchQuery(''); // Clear the search query when a category is clicked
+      navigate(`/${category}`);
+    }
+
     const handleKeyDown = (event) => {
         if (event.key === 'Enter') {
             handleSearchSubmit(event.target.value.trim());
             event.target.value = ''; // Clear the input field after submitting
+            setCurrentQuery('')
           }
         }
   
@@ -132,19 +140,19 @@ export const NavBar = () => {
               sx={{ flexGrow: 1 }}
               className="navbar__links"
             >
-              <NavLink to="/" style={{ color: 'inherit', textDecoration: 'none', padding: "10px" }}>
+              <NavLink to="/" style={{ color: 'inherit', textDecoration: 'none', padding: "10px" }} onClick={() => handleCategoryClick('')}>
                 Top News
               </NavLink>
-              <NavLink to="/entertainment" style={{ color: 'inherit', textDecoration: 'none' , padding: "10px"}}>
+              <NavLink to="/entertainment" style={{ color: 'inherit', textDecoration: 'none' , padding: "10px"}} onClick={() => handleCategoryClick('entertainment')}>
                 Entertainment
               </NavLink>
-              <NavLink to="/technology" style={{ color: 'inherit', textDecoration: 'none' , padding: "10px"}}>
+              <NavLink to="/technology" style={{ color: 'inherit', textDecoration: 'none' , padding: "10px"}} onClick={() => handleCategoryClick('technology')}>
                 Technology
               </NavLink>
-              <NavLink to="/sports" style={{ color: 'inherit', textDecoration: 'none' , padding: "10px"}}>
+              <NavLink to="/sports" style={{ color: 'inherit', textDecoration: 'none' , padding: "10px"}} onClick={() => handleCategoryClick('sports')}>
               Sports
               </NavLink>
-              <NavLink to="/science" style={{ color: 'inherit', textDecoration: 'none' , padding: "10px"}}>
+              <NavLink to="/science" style={{ color: 'inherit', textDecoration: 'none' , padding: "10px"}} onClick={() => handleCategoryClick('science')}>
               Science
               </NavLink>
               <NavLink to="/saved_articles" style={{ color: 'inherit', textDecoration: "underline" , padding: "10px"}} className="navbar__right-links">
