@@ -32,6 +32,8 @@ export default function CommentsModal({
   const [newComment, setNewComment] = useState(initialNewCommentState)
   const [editingComment, setEditingComment] = useState(null)
   const [moods, setMoods] = useState([])
+  const [commentText, setCommentText] = useState("")
+  const [selectedMood, setSelectedMood] = useState(null)
 
   const fetchCommentsFromApi = async (articleUrl) => {
     let url = `http://localhost:8000/comments?article_url=${articleUrl}`
@@ -79,11 +81,12 @@ export default function CommentsModal({
 
   // Function to handle changes in the new comment input fields
   const handleChange = (event) => {
-    const { name, value } = event.target
-    setNewComment({
-      ...newComment,
-      [name]: name === "mood" ? (value === "" ? null : parseInt(value)) : value,
-    })
+    const { name, value } = event.target;
+    if (name === "comment") {
+      setCommentText(value);
+    } else if (name === "mood") {
+      setSelectedMood(value === "" ? null : parseInt(value));
+    }
   }
 
   // Function to set the comment state being edited
@@ -131,20 +134,33 @@ export default function CommentsModal({
 
   // Function to handle creating a new comment
   const createComment = async (event) => {
-    event.preventDefault()
+    event.preventDefault();
 
-    await fetch(`http://localhost:8000/comments`, {
-      method: "POST",
-      headers: {
-        Authorization: `Token ${
-          JSON.parse(localStorage.getItem("news_token")).token
-        }`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(newComment),
-    })
-    await fetchCommentsFromApi(articleUrl)
-  }
+    try {
+      const moodId = selectedMood ? selectedMood : null; // Get the mood ID or null
+  
+      await fetch(`http://localhost:8000/comments`, {
+        method: "POST",
+        headers: {
+          Authorization: `Token ${
+            JSON.parse(localStorage.getItem("news_token")).token
+          }`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user: currentUser.user_id, // Use currentUser.user_id directly
+          article_url: articleUrl, // Use articleUrl directly
+          comment: commentText,
+          mood: moodId, // Send the mood ID or null
+        }),
+      });
+      await fetchCommentsFromApi(articleUrl);
+      setCommentText(""); // Reset commentText
+      setSelectedMood(null); // Reset selectedMood
+    } catch (error) {
+      console.error("Error creating comment:", error);
+    }
+  };
 
   return (
     <Modal
@@ -174,6 +190,8 @@ export default function CommentsModal({
                           comment: e.target.value,
                         })
                       }
+                      fullWidth
+                      sx={{ marginBottom: '1rem' }}
                     />
                     <TextField
                       select
@@ -250,6 +268,7 @@ export default function CommentsModal({
             multiline
             rows={4}
             variant="outlined"
+            value={commentText}
             onChange={handleChange}
           />
 
@@ -258,7 +277,7 @@ export default function CommentsModal({
             select
             label="Mood"
             name="mood"
-            value={newComment.mood}
+            value={selectedMood || ""}
             onChange={handleChange}
             variant="outlined"
           >
