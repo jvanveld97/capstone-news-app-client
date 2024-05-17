@@ -2,30 +2,36 @@
 
 ## Prerequisites
 
-Node.js v20.9.0
-
-npm 10.1.0
+- **Node.js** v20.9.0
+- **npm** 10.1.0
 
 ## Installation
 
-- Clone the repository:
+1. Clone the repository:
 
-    ```git clone https://github.com/your-username/your-repo.git```
+    ```sh
+    git clone https://github.com/your-username/your-repo.git
+    ```
 
-- Navigate to the project directory:
+2. Navigate to the project directory:
 
-    ```cd your-repo```
+    ```sh
+    cd your-repo
+    ```
 
-- Install dependencies:
+3. Install dependencies:
 
-    ```npm install```
+    ```sh
+    npm install
+    ```
 
 ## Development Server
 
-  To start the development server, run the following command:
-    ```npm run dev```
+To start the development server, run the following command:
 
-  This will start the Vite development server and automatically open your application in the browser. Any changes you make to the source files will trigger a hot-reload, allowing you to see the updates in real-time.
+```sh
+npm run dev
+```
 
 ## React + Vite
 
